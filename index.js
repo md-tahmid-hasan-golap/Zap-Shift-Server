@@ -37,6 +37,42 @@ async function run() {
     await client.connect();
 
 
+  // all collections
+const parcelCollaction = client.db("parcelDB").collection("parcels");
+
+app.post('/parcels', async (req, res) => {
+    try {
+        const newParcel = req.body;
+
+        // MongoDB এ insert করা
+        const result = await parcelCollaction.insertOne(newParcel);
+
+        // Success response
+        res.status(201).send(result);
+    } catch (error) {
+        console.error("Error inserting parcel:", error);
+        res.status(500).send({ message: "Failed to create parcel" });
+    }
+});
+
+
+app.get('/parcels', async (req, res) => {
+   try{
+     const userEmail = req.query.email
+    const query = userEmail ? {email: userEmail} : {}
+
+    const options = {
+        sort: {createdAt: -1}
+    }
+
+    const parcel = await parcelCollaction.find(query,options).toArray()
+    res.send(parcel)
+   }catch(error){
+    console.error(error)
+   }
+})
+
+
 
 
 
